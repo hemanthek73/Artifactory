@@ -21,4 +21,4 @@ jobs:
         run: echo "Hello JFrog" > hello.txt
 
       - name: Upload File
-        run: jf rt u hello.txt generic-local/
+        run: jf rt u hello.txt generic_local/

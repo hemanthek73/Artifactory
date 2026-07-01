@@ -1,0 +1,24 @@
+name: Upload to JFrog Artifactory
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ secrets.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
+      - name: Create Test File
+        run: echo "Hello JFrog" > hello.txt
+
+      - name: Upload File
+        run: jf rt u hello.txt generic-local/

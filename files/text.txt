@@ -1,0 +1,92 @@
+Option 1: Upload all files from a specific folder (recommended)
+
+Suppose your repository looks like this:
+
+Artifactory/
+├── files/
+│   ├── app.jar
+│   ├── config.yaml
+│   └── test.txt
+└── .github/
+    └── workflows/
+        └── build.yml
+
+Update your workflow:
+
+name: Upload to JFrog Artifactory
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: jfrog/setup-jfrog-cli@v4
+        env:
+          JF_URL: ${{ secrets.JF_URL }}
+          JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
+
+      - name: Upload all files
+        run: |
+          jf rt u "files/*" "generic_local/"
+
+Now, every time you add files to the files folder and push to GitHub, they'll be uploaded to the generic_local repository in Artifactory.
+
+Option 2: Upload the entire repository
+
+If you want to upload everything in the repository (except the .git directory):
+
+- name: Upload Repository
+  run: |
+    jf rt u "*" "generic_local/"
+Option 3: Upload specific file types
+
+Upload only text files:
+
+- name: Upload Text Files
+  run: |
+    jf rt u "*.txt" "generic_local/"
+
+Upload only JAR files:
+
+- name: Upload JAR Files
+  run: |
+    jf rt u "**/*.jar" "generic_local/"
+Example
+Create a folder in your repository:
+files/
+Add files:
+files/
+├── test1.txt
+├── test2.txt
+└── sample.pdf
+Commit and push:
+git add .
+git commit -m "Upload files to Artifactory"
+git push origin main
+
+GitHub Actions will automatically upload those files to your generic_local repository.
+
+Where will the files appear in Artifactory?
+
+If you use:
+
+jf rt u "files/*" "generic_local/"
+
+the repository will contain:
+
+generic_local/
+├── test1.txt
+├── test2.txt
+└── sample.pdf
+
+If your goal is to build a realistic DevOps/JFrog Admin project for your résumé, I can also show you how to:
+
+Upload the files while preserving the GitHub folder structure.
+Create versioned folders such as build-1, build-2, etc., using the GitHub Actions run number. This is a common practice in production CI/CD pipelines.
